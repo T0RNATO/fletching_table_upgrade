@@ -1,0 +1,15 @@
+{
+    "required": true,
+    "minVersion": "0.8",
+    "package": "tornato.fletching.mixin",
+    "compatibilityLevel": "JAVA_21",
+    "mixins": [
+        "FletchingTableMixin"
+    ],
+    "injectors": {
+        "defaultRequire": 1
+    },
+    "overwrites": {
+        "requireAnnotations": true
+    }
+}
