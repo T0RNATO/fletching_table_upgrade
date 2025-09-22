@@ -12,6 +12,8 @@
         "requireAnnotations": true
     },
     "mixins": [
-        "ComponentTooltipMixin"
+        "ComponentTooltipMixin",
+        "ProjectileMixin",
+        "RangedWeaponMixin"
     ]
 }

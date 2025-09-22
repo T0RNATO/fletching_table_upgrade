@@ -1,0 +1,26 @@
+{
+    "fletching.tooltip.fletching": " Fletching: ",
+    "fletching.tooltip.shaft": " Shaft: ",
+    "fletching.tooltip.point": " Point: ",
+    "fletching.tooltip.effect": " Effect: ",
+
+    "fletching.tooltip.effect.expanded": "  Applies this effect on hit",
+
+    "fletching.tooltip.item.minecraft.stick": "  No special effects",
+    "fletching.tooltip.item.minecraft.blaze_rod": "  TODO",
+    "fletching.tooltip.item.minecraft.breeze_rod": "  No-gravity",
+
+    "fletching.tooltip.item.minecraft.feather": "  No special effects",
+    "fletching.tooltip.item.minecraft.phantom_membrane": "  Greatly increases arrow velocity",
+
+    "fletching.tooltip.item.minecraft.flint": "  No special effects",
+    "fletching.tooltip.item.minecraft.prismarine_shard": "  Removes water velocity penalty",
+    "fletching.tooltip.item.minecraft.echo_shard": "  Applies darkness on hit",
+    "fletching.tooltip.item.minecraft.amethyst_shard": "  Shatters on hit",
+
+    "fletching.tooltip.item.minecraft.gunpowder": "  Explodes on landing",
+    "fletching.tooltip.item.minecraft.glowstone_dust": "  Applies glowing on hit",
+    "fletching.tooltip.item.minecraft.slime_ball": " Bounces off walls ",
+
+    "item.fletching.arrow": "Arrow"
+}

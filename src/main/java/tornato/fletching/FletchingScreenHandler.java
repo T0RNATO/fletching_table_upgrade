@@ -3,6 +3,7 @@ package tornato.fletching;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.PotionContentsComponent;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.Item;
@@ -23,7 +24,7 @@ public class FletchingScreenHandler extends ForgingScreenHandler {
     }
 
     public static Set<Item> FLETCHING = Set.of(
-            Items.FEATHER, Items.PHANTOM_MEMBRANE, Items.WHEAT
+            Items.FEATHER, Items.PHANTOM_MEMBRANE
     );
     public static Set<Item> SHAFTS = Set.of(
             Items.STICK, Items.BLAZE_ROD, Items.BREEZE_ROD
@@ -77,8 +78,13 @@ public class FletchingScreenHandler extends ForgingScreenHandler {
             return;
         }
 
-        Optional<RegistryEntry<Potion>> effect = effect_slot.isOf(Items.POTION) ? effect_slot.get(DataComponentTypes.POTION_CONTENTS).potion() : Optional.empty();
-        Optional<RegistryEntry<Item>> effect_item = (!effect_slot.isEmpty() && !effect_slot.isOf(Items.POTION)) ? Optional.of(effect_slot.getItem().getRegistryEntry()) : Optional.empty();
+        Optional<RegistryEntry<Potion>> effect = effect_slot.isOf(Items.POTION) ?
+                effect_slot.getOrDefault(DataComponentTypes.POTION_CONTENTS, PotionContentsComponent.DEFAULT).potion():
+                Optional.empty();
+
+        Optional<RegistryEntry<Item>> effect_item = (!effect_slot.isEmpty() && !effect_slot.isOf(Items.POTION)) ?
+                Optional.of(effect_slot.getItem().getRegistryEntry()):
+                Optional.empty();
 
         var stack = new ItemStack(Fletching.ARROW_ITEM, 16);
         stack.set(Fletching.ARROW_COMPONENT, new ArrowComponent(fletching.getRegistryEntry(), shaft.getRegistryEntry(), point.getRegistryEntry(), effect, effect_item));
