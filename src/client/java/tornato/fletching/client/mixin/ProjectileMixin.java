@@ -14,7 +14,7 @@ public abstract class ProjectileMixin {
     @Shadow public abstract ItemStack getItemStack();
 
     @ModifyArg(method = "onEntityHit", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/math/MathHelper;clamp(DDD)D"), index = 0)
-    private double counteractVelocityMultiplierExtraDamage(double value) {
-        return value / this.getItemStack().getOrDefault(Fletching.ARROW_COMPONENT, ArrowComponent.DEFAULT).velocityMultiplier();
+    private double applyDamageMultiplier(double value) {
+        return value * this.getItemStack().getOrDefault(Fletching.ARROW_COMPONENT, ArrowComponent.DEFAULT).damageMultiplier();
     }
 }

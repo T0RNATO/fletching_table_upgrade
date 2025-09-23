@@ -15,6 +15,7 @@ import net.minecraft.screen.ForgingScreenHandler;
 import net.minecraft.screen.ScreenHandlerContext;
 import net.minecraft.screen.slot.ForgingSlotsManager;
 
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -23,17 +24,22 @@ public class FletchingScreenHandler extends ForgingScreenHandler {
         this(syncId, playerInventory, ScreenHandlerContext.EMPTY);
     }
 
-    public static Set<Item> FLETCHING = Set.of(
+    public static final Set<Item> FLETCHING = Set.of(
             Items.FEATHER, Items.PHANTOM_MEMBRANE
     );
-    public static Set<Item> SHAFTS = Set.of(
+    public static final Set<Item> SHAFTS = Set.of(
             Items.STICK, Items.BLAZE_ROD, Items.BREEZE_ROD
     );
-    public static Set<Item> POINTS = Set.of(
-            Items.FLINT, Items.PRISMARINE_SHARD, Items.ECHO_SHARD, Items.AMETHYST_SHARD
+    public static final Set<Item> POINTS = Set.of(
+            Items.FLINT, Items.PRISMARINE_SHARD, Items.ECHO_SHARD, Items.AMETHYST_SHARD, Items.DIAMOND
     );
-    public static Set<Item> EFFECTS = Set.of(
-            Items.POTION, Items.GUNPOWDER, Items.GLOWSTONE_DUST, Items.SLIME_BALL
+    public static final Set<Item> EFFECTS = Set.of(
+            Items.SPLASH_POTION, Items.GUNPOWDER, Items.GLOWSTONE_DUST, Items.SLIME_BALL
+    );
+
+    public static final Map<Item, Integer> YIELD = Map.of(
+            Items.DIAMOND, 12,
+            Items.ECHO_SHARD, 32
     );
 
     public FletchingScreenHandler(int syncId, PlayerInventory playerInventory, ScreenHandlerContext context) {
@@ -78,15 +84,15 @@ public class FletchingScreenHandler extends ForgingScreenHandler {
             return;
         }
 
-        Optional<RegistryEntry<Potion>> effect = effect_slot.isOf(Items.POTION) ?
+        Optional<RegistryEntry<Potion>> effect = effect_slot.isOf(Items.SPLASH_POTION) ?
                 effect_slot.getOrDefault(DataComponentTypes.POTION_CONTENTS, PotionContentsComponent.DEFAULT).potion():
                 Optional.empty();
 
-        Optional<RegistryEntry<Item>> effect_item = (!effect_slot.isEmpty() && !effect_slot.isOf(Items.POTION)) ?
+        Optional<RegistryEntry<Item>> effect_item = (!effect_slot.isEmpty() && !effect_slot.isOf(Items.SPLASH_POTION)) ?
                 Optional.of(effect_slot.getItem().getRegistryEntry()):
                 Optional.empty();
 
-        var stack = new ItemStack(Fletching.ARROW_ITEM, 16);
+        var stack = new ItemStack(Fletching.ARROW_ITEM, YIELD.getOrDefault(point.getItem(), 6));
         stack.set(Fletching.ARROW_COMPONENT, new ArrowComponent(fletching.getRegistryEntry(), shaft.getRegistryEntry(), point.getRegistryEntry(), effect, effect_item));
         this.output.setStack(0, stack);
     }

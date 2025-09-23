@@ -1,11 +1,18 @@
 package tornato.fletching;
 
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.data.DataTracker;
+import net.minecraft.entity.data.TrackedData;
+import net.minecraft.entity.data.TrackedDataHandlerRegistry;
+import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
@@ -13,28 +20,53 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import net.minecraft.world.explosion.Explosion;
 import net.minecraft.world.explosion.ExplosionBehavior;
 import org.jetbrains.annotations.Nullable;
 
 public class FletchedArrowEntity extends PersistentProjectileEntity {
+    private static final TrackedData<ItemStack> ITEM = DataTracker.registerData(FletchedArrowEntity.class, TrackedDataHandlerRegistry.ITEM_STACK);
+
     public static final ExplosionBehavior EXPLOSION_BEHAVIOR = new ExplosionBehavior();
+    public static final ExplosionBehavior FIRE_BEHAVIOUR = new ExplosionBehavior() {
+        @Override public boolean shouldDamage(Explosion explosion, Entity entity) { return false; }
+    };
 
     private int bounceCount = 0;
 
     public FletchedArrowEntity(World world, double x, double y, double z, ItemStack stack, @Nullable ItemStack shotFrom) {
         super(Fletching.ARROW_ENTITY, x, y, z, world, stack, shotFrom);
+        updateDataTracker(stack);
     }
 
     public FletchedArrowEntity(EntityType<? extends FletchedArrowEntity> entityType, World world) {
         super(entityType, world);
+        updateDataTracker(getDefaultItemStack());
     }
 
     public FletchedArrowEntity(World world, LivingEntity shooter, ItemStack itemStack, @Nullable ItemStack shotFrom) {
         super(Fletching.ARROW_ENTITY, shooter, world, itemStack, shotFrom);
+        updateDataTracker(itemStack);
     }
 
-    private ArrowComponent getComponent() {
+    public ArrowComponent getComponent() {
         return this.getItemStack().getOrDefault(Fletching.ARROW_COMPONENT, ArrowComponent.DEFAULT);
+    }
+
+    @Override
+    protected void setStack(ItemStack stack) {
+        super.setStack(stack);
+        updateDataTracker(stack);
+    }
+
+    protected void updateDataTracker(ItemStack stack) {
+        this.getDataTracker().set(ITEM, stack.copyWithCount(1));
+    }
+
+    @Override
+    protected void initDataTracker(DataTracker.Builder builder) {
+        super.initDataTracker(builder);
+        builder.add(ITEM, this.getDefaultItemStack());
     }
 
     @Override
@@ -57,6 +89,7 @@ public class FletchedArrowEntity extends PersistentProjectileEntity {
 
     @Override
     protected void onCollision(HitResult hitResult) {
+//        System.out.println(this.getComponent().bouncy());
         if (this.getWorld().isClient()) { // todo: sync the component to the client so I don't need this check?
             super.onCollision(hitResult); return;
         }
@@ -79,11 +112,15 @@ public class FletchedArrowEntity extends PersistentProjectileEntity {
         }
         if (
             hitResult.getType() != HitResult.Type.MISS &&
-            bounceCount < 1 &&
-            this.getComponent().explodesOnHit()
+            bounceCount < 1
         ) {
             var world = this.getWorld();
-            world.createExplosion(this, world.getDamageSources().explosion(this, this.getOwner()), EXPLOSION_BEHAVIOR, hitResult.getPos(), 1, false, World.ExplosionSourceType.MOB);
+            if (this.getComponent().explodesOnHit()) {
+                world.createExplosion(this, world.getDamageSources().explosion(this, this.getEffectCause()), EXPLOSION_BEHAVIOR, hitResult.getPos(), 1, false, World.ExplosionSourceType.MOB);
+            }
+            if (this.getComponent().onFire()) {
+                world.createExplosion(this, world.getDamageSources().explosion(this, this.getEffectCause()), FIRE_BEHAVIOUR, hitResult.getPos(), 1.5f, true, World.ExplosionSourceType.MOB);
+            }
             bounceCount++;
         }
     }
@@ -91,27 +128,19 @@ public class FletchedArrowEntity extends PersistentProjectileEntity {
     @Override
     protected void onHit(LivingEntity target) {
         super.onHit(target);
-        Entity entity = this.getEffectCause();
+        var component = this.getComponent();
 
-//        PotionContentsComponent potionContentsComponent = this.getPotionContents();
-//        if (potionContentsComponent.potion().isPresent()) {
-//            for (StatusEffectInstance statusEffectInstance : ((Potion)((RegistryEntry)potionContentsComponent.potion().get()).value()).getEffects()) {
-//                target.addStatusEffect(
-//                        new StatusEffectInstance(
-//                                statusEffectInstance.getEffectType(),
-//                                Math.max(statusEffectInstance.mapDuration(i -> i / 8), 1),
-//                                statusEffectInstance.getAmplifier(),
-//                                statusEffectInstance.isAmbient(),
-//                                statusEffectInstance.shouldShowParticles()
-//                        ),
-//                        entity
-//                );
-//            }
-//        }
-//
-//        for (StatusEffectInstance statusEffectInstance : potionContentsComponent.customEffects()) {
-//            target.addStatusEffect(statusEffectInstance, entity);
-//        }
+        if (component.hasEffect()) {
+            var effects = this.getComponent().effect().get().getKeyOrValue().right().get().getEffects();
+            for (var effect : effects) {
+                target.addStatusEffect(effect, this.getEffectCause());
+            }
+        } else if (component.spectral()) {
+            target.addStatusEffect(new StatusEffectInstance(StatusEffects.GLOWING, 200, 0), this.getEffectCause());
+        }
+        if (component.appliesDarkness()) {
+            target.addStatusEffect(new StatusEffectInstance(StatusEffects.DARKNESS, 100, 0), this.getEffectCause());
+        }
     }
 
     @Override
@@ -120,29 +149,8 @@ public class FletchedArrowEntity extends PersistentProjectileEntity {
     }
 
     @Override
-    public void handleStatus(byte status) {
-        if (status == 0) {
-//            int i = this.getColor();
-//            if (i != -1) {
-//                float f = (i >> 16 & 0xFF) / 255.0F;
-//                float g = (i >> 8 & 0xFF) / 255.0F;
-//                float h = (i >> 0 & 0xFF) / 255.0F;
-//
-//                for (int j = 0; j < 20; j++) {
-//                    this.getWorld()
-//                            .addParticle(
-//                                    EntityEffectParticleEffect.create(ParticleTypes.ENTITY_EFFECT, f, g, h),
-//                                    this.getParticleX(0.5),
-//                                    this.getRandomBodyY(),
-//                                    this.getParticleZ(0.5),
-//                                    0.0,
-//                                    0.0,
-//                                    0.0
-//                            );
-//                }
-//            }
-        } else {
-            super.handleStatus(status);
-        }
+    public void readCustomDataFromNbt(NbtCompound nbt) {
+        super.readCustomDataFromNbt(nbt);
+        this.updateDataTracker(ItemStack.fromNbt(this.getRegistryManager(), nbt.getCompound("Item")).orElseGet(this::getDefaultItemStack));
     }
 }

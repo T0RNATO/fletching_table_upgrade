@@ -7,7 +7,11 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.tooltip.TooltipAppender;
 import net.minecraft.item.tooltip.TooltipType;
+import net.minecraft.network.RegistryByteBuf;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.potion.Potion;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.text.Text;
 import net.minecraft.util.Colors;
@@ -23,6 +27,18 @@ public record ArrowComponent(RegistryEntry<Item> fletching, RegistryEntry<Item> 
             Potion.CODEC.optionalFieldOf("effect").forGetter(ArrowComponent::effect),
             ItemStack.ITEM_CODEC.optionalFieldOf("effect_item").forGetter(ArrowComponent::effect_item)
     ).apply(builder, ArrowComponent::new));
+
+    private static final PacketCodec<RegistryByteBuf, RegistryEntry<Item>> ITEM_PACKET_CODEC = PacketCodecs.registryEntry(RegistryKeys.ITEM);
+
+    public static final PacketCodec<RegistryByteBuf, ArrowComponent> PACKET_CODEC = PacketCodec.tuple(
+            ITEM_PACKET_CODEC, ArrowComponent::fletching,
+            ITEM_PACKET_CODEC, ArrowComponent::shaft,
+            ITEM_PACKET_CODEC, ArrowComponent::point,
+            Potion.PACKET_CODEC.collect(PacketCodecs::optional), ArrowComponent::effect,
+            ITEM_PACKET_CODEC.collect(PacketCodecs::optional), ArrowComponent::effect_item,
+            ArrowComponent::new
+    );
+
     public static final ArrowComponent DEFAULT = new ArrowComponent(Items.FEATHER.getRegistryEntry(), Items.STICK.getRegistryEntry(), Items.FLINT.getRegistryEntry(), Optional.empty(), Optional.empty());
 
     private static void line(Consumer<Text> tooltip, String label, String translationKey) {
@@ -56,10 +72,15 @@ public record ArrowComponent(RegistryEntry<Item> fletching, RegistryEntry<Item> 
         }
     }
 
+    public float velocityMultiplier() {
+        return this.fletching.value().equals(Items.PHANTOM_MEMBRANE) ? 1.75f : 1;
+    }
+    public float damageMultiplier() {
+        return (this.point.value().equals(Items.DIAMOND) ? 1.75f : 1) / this.velocityMultiplier();
+    }
+
     public boolean noGrav() { return this.shaft.value().equals(Items.BREEZE_ROD); }
     public boolean onFire() { return this.shaft.value().equals(Items.BLAZE_ROD); }
-
-    public float velocityMultiplier() { return this.fletching.value().equals(Items.PHANTOM_MEMBRANE) ? 1.75f : 1; }
 
     public boolean noWaterPenalty()  { return this.point.value().equals(Items.PRISMARINE_SHARD); }
     public boolean appliesDarkness() { return this.point.value().equals(Items.ECHO_SHARD); }
@@ -68,4 +89,5 @@ public record ArrowComponent(RegistryEntry<Item> fletching, RegistryEntry<Item> 
     public boolean explodesOnHit() { return this.effect_item.isPresent() && this.effect_item.get().equals(Items.GUNPOWDER.getRegistryEntry()); }
     public boolean spectral()      { return this.effect_item.isPresent() && this.effect_item.get().equals(Items.GLOWSTONE_DUST.getRegistryEntry()); }
     public boolean bouncy()        { return this.effect_item.isPresent() && this.effect_item.get().equals(Items.SLIME_BALL.getRegistryEntry()); }
+    public boolean hasEffect()     { return this.effect.isPresent(); }
 }
