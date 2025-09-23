@@ -20,7 +20,7 @@
 
     "fletching.tooltip.item.minecraft.gunpowder": "  Explodes on landing",
     "fletching.tooltip.item.minecraft.glowstone_dust": "  Applies glowing on hit",
-    "fletching.tooltip.item.minecraft.slime_ball": " Bounces off walls ",
+    "fletching.tooltip.item.minecraft.slime_ball": "  Bounces off walls up to 4 times",
 
     "item.fletching.arrow": "Arrow"
 }

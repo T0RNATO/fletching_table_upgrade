@@ -61,11 +61,11 @@ public record ArrowComponent(RegistryEntry<Item> fletching, RegistryEntry<Item> 
 
     public float velocityMultiplier() { return this.fletching.value().equals(Items.PHANTOM_MEMBRANE) ? 1.75f : 1; }
 
-    public boolean noWaterPenalty() { return this.point.value().equals(Items.PRISMARINE_SHARD); }
+    public boolean noWaterPenalty()  { return this.point.value().equals(Items.PRISMARINE_SHARD); }
     public boolean appliesDarkness() { return this.point.value().equals(Items.ECHO_SHARD); }
-    public boolean shattersOnHit() { return this.point.value().equals(Items.AMETHYST_SHARD); }
+    public boolean shattersOnHit()   { return this.point.value().equals(Items.AMETHYST_SHARD); }
 
-    public boolean explodesOnHit() { return this.effect_item.isPresent() && this.effect_item.get().equals(Items.GUNPOWDER); }
-    public boolean spectral() { return this.effect_item.isPresent() && this.effect_item.get().equals(Items.GLOWSTONE_DUST); }
-    public boolean bouncy() { return this.effect_item.isPresent() && this.effect_item.get().equals(Items.SLIME_BALL); }
+    public boolean explodesOnHit() { return this.effect_item.isPresent() && this.effect_item.get().equals(Items.GUNPOWDER.getRegistryEntry()); }
+    public boolean spectral()      { return this.effect_item.isPresent() && this.effect_item.get().equals(Items.GLOWSTONE_DUST.getRegistryEntry()); }
+    public boolean bouncy()        { return this.effect_item.isPresent() && this.effect_item.get().equals(Items.SLIME_BALL.getRegistryEntry()); }
 }
