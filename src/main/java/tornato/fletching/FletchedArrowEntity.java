@@ -1,6 +1,5 @@
 package tornato.fletching;
 
-import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -50,7 +49,7 @@ public class FletchedArrowEntity extends PersistentProjectileEntity {
     }
 
     public ArrowComponent getComponent() {
-        return this.getItemStack().getOrDefault(Fletching.ARROW_COMPONENT, ArrowComponent.DEFAULT);
+        return this.getDataTracker().get(ITEM).getOrDefault(Fletching.ARROW_COMPONENT, ArrowComponent.DEFAULT);
     }
 
     @Override
@@ -89,10 +88,6 @@ public class FletchedArrowEntity extends PersistentProjectileEntity {
 
     @Override
     protected void onCollision(HitResult hitResult) {
-//        System.out.println(this.getComponent().bouncy());
-        if (this.getWorld().isClient()) { // todo: sync the component to the client so I don't need this check?
-            super.onCollision(hitResult); return;
-        }
         if (
             hitResult.getType() == HitResult.Type.BLOCK &&
             bounceCount < 5 &&
@@ -115,11 +110,13 @@ public class FletchedArrowEntity extends PersistentProjectileEntity {
             bounceCount < 1
         ) {
             var world = this.getWorld();
-            if (this.getComponent().explodesOnHit()) {
-                world.createExplosion(this, world.getDamageSources().explosion(this, this.getEffectCause()), EXPLOSION_BEHAVIOR, hitResult.getPos(), 1, false, World.ExplosionSourceType.MOB);
-            }
-            if (this.getComponent().onFire()) {
-                world.createExplosion(this, world.getDamageSources().explosion(this, this.getEffectCause()), FIRE_BEHAVIOUR, hitResult.getPos(), 1.5f, true, World.ExplosionSourceType.MOB);
+            if (!world.isClient()) {
+                if (this.getComponent().explodesOnHit()) {
+                    world.createExplosion(this, world.getDamageSources().explosion(this, this.getEffectCause()), EXPLOSION_BEHAVIOR, hitResult.getPos(), 1, false, World.ExplosionSourceType.MOB);
+                }
+                if (this.getComponent().onFire()) {
+                    world.createExplosion(this, world.getDamageSources().explosion(this, this.getEffectCause()), FIRE_BEHAVIOUR, hitResult.getPos(), 1.5f, true, World.ExplosionSourceType.MOB);
+                }
             }
             bounceCount++;
         }

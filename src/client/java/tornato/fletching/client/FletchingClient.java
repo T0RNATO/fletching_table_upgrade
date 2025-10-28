@@ -1,6 +1,7 @@
 package tornato.fletching.client;
 
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.client.rendering.v1.BuiltinItemRendererRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ingame.HandledScreens;
@@ -18,5 +19,7 @@ public class FletchingClient implements ClientModInitializer {
     public void onInitializeClient() {
         EntityRendererRegistry.register(Fletching.ARROW_ENTITY, FletchedArrowRenderer::new);
         ExpandingTooltip.INSTANCE = Screen::hasShiftDown;
+
+        BuiltinItemRendererRegistry.INSTANCE.register(Fletching.ARROW_ITEM, new FletchedArrowItemRenderer());
     }
 }

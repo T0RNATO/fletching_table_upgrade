@@ -79,6 +79,10 @@ public record ArrowComponent(RegistryEntry<Item> fletching, RegistryEntry<Item> 
         return (this.point.value().equals(Items.DIAMOND) ? 1.75f : 1) / this.velocityMultiplier();
     }
 
+    public String fletchingPath() { return "fletching/" + this.fletching().getKey().get().getValue().getPath(); }
+    public String shaftPath() { return "shaft/" + this.shaft().getKey().get().getValue().getPath(); }
+    public String pointPath() { return "point/" + this.point().getKey().get().getValue().getPath(); }
+
     public boolean noGrav() { return this.shaft.value().equals(Items.BREEZE_ROD); }
     public boolean onFire() { return this.shaft.value().equals(Items.BLAZE_ROD); }
 
