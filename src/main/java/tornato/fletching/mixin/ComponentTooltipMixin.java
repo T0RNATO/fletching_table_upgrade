@@ -1,4 +1,4 @@
-package tornato.fletching.client.mixin;
+package tornato.fletching.mixin;
 
 import com.llamalad7.mixinextras.sugar.Local;
 import net.minecraft.component.ComponentType;

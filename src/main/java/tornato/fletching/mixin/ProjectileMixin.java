@@ -1,4 +1,4 @@
-package tornato.fletching.client.mixin;
+package tornato.fletching.mixin;
 
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.item.ItemStack;

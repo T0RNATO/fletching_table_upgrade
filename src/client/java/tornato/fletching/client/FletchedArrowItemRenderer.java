@@ -5,7 +5,6 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.DiffuseLighting;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.model.json.ModelTransformationMode;
-import net.minecraft.client.util.ModelIdentifier;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import tornato.fletching.ArrowComponent;
@@ -38,7 +37,6 @@ public class FletchedArrowItemRenderer implements BuiltinItemRendererRegistry.Dy
         var renderer = MinecraftClient.getInstance().getItemRenderer();
         var manager = renderer.getModels().getModelManager();
 
-        renderer.renderItem(stack, mode, false, matrices, vertexConsumers, light, overlay,
-                manager.getModel(ModelIdentifier.ofInventoryVariant(id(path))));
+        renderer.renderItem(stack, mode, false, matrices, vertexConsumers, light, overlay, manager.getModel(id("item/" + path)));
     }
 }

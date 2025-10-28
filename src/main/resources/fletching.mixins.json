@@ -4,7 +4,10 @@
     "package": "tornato.fletching.mixin",
     "compatibilityLevel": "JAVA_21",
     "mixins": [
-        "FletchingTableMixin"
+        "ComponentTooltipMixin",
+        "FletchingTableMixin",
+        "ProjectileMixin",
+        "RangedWeaponMixin"
     ],
     "injectors": {
         "defaultRequire": 1

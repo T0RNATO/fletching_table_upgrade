@@ -4,7 +4,6 @@
     "package": "tornato.fletching.client.mixin",
     "compatibilityLevel": "JAVA_21",
     "client": [
-        "ModelLoaderMixin"
     ],
     "injectors": {
         "defaultRequire": 1
@@ -13,8 +12,5 @@
         "requireAnnotations": true
     },
     "mixins": [
-        "ComponentTooltipMixin",
-        "ProjectileMixin",
-        "RangedWeaponMixin"
     ]
 }
