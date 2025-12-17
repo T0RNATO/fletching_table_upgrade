@@ -11,6 +11,11 @@ import net.minecraft.registry.Registry;
 import net.minecraft.resource.featuretoggle.FeatureFlags;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.util.Identifier;
+import tornato.fletching.entity.AmethystShrapnelEntity;
+import tornato.fletching.entity.FletchedArrowEntity;
+import tornato.fletching.item.ArrowComponent;
+import tornato.fletching.item.FletchedArrowItem;
+import tornato.fletching.screen.FletchingScreenHandler;
 
 public class Fletching implements ModInitializer {
     public static final ScreenHandlerType<FletchingScreenHandler> FLETCHING_SCREEN = Registry.register(Registries.SCREEN_HANDLER, id("fletching"), new ScreenHandlerType<>(FletchingScreenHandler::new, FeatureFlags.VANILLA_FEATURES));
@@ -18,6 +23,7 @@ public class Fletching implements ModInitializer {
     public static final ComponentType<ArrowComponent> ARROW_COMPONENT = Registry.register(Registries.DATA_COMPONENT_TYPE, id("arrow"),
             ComponentType.<ArrowComponent>builder().codec(ArrowComponent.CODEC).packetCodec(ArrowComponent.PACKET_CODEC).build());
     public static final EntityType<FletchedArrowEntity> ARROW_ENTITY = Registry.register(Registries.ENTITY_TYPE, id("arrow"), EntityType.Builder.<FletchedArrowEntity>create(FletchedArrowEntity::new, SpawnGroup.MISC).build("fletching:arrow"));
+    public static final EntityType<AmethystShrapnelEntity> AMETHYST_SHRAPNEL_ENTITY = Registry.register(Registries.ENTITY_TYPE, id("shrapnel"), EntityType.Builder.create(AmethystShrapnelEntity::new, SpawnGroup.MISC).build("fletching:amethyst_shrapnel"));
 
     public static Identifier id(String path) {
         return Identifier.of("fletching", path);

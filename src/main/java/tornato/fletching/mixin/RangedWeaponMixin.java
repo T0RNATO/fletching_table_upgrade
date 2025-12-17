@@ -14,8 +14,8 @@ import org.spongepowered.asm.mixin.Debug;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
-import tornato.fletching.ArrowComponent;
-import tornato.fletching.FletchedArrowItem;
+import tornato.fletching.item.ArrowComponent;
+import tornato.fletching.item.FletchedArrowItem;
 import tornato.fletching.Fletching;
 
 @Debug(export = true)

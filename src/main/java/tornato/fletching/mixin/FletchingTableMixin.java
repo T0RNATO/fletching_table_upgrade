@@ -14,7 +14,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import tornato.fletching.FletchingScreenHandler;
+import tornato.fletching.screen.FletchingScreenHandler;
 
 @Mixin(FletchingTableBlock.class)
 public class FletchingTableMixin {

@@ -1,4 +1,4 @@
-package tornato.fletching;
+package tornato.fletching.screen;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -14,6 +14,8 @@ import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.screen.ForgingScreenHandler;
 import net.minecraft.screen.ScreenHandlerContext;
 import net.minecraft.screen.slot.ForgingSlotsManager;
+import tornato.fletching.Fletching;
+import tornato.fletching.item.ArrowComponent;
 
 import java.util.Map;
 import java.util.Optional;
@@ -44,8 +46,6 @@ public class FletchingScreenHandler extends ForgingScreenHandler {
 
     public FletchingScreenHandler(int syncId, PlayerInventory playerInventory, ScreenHandlerContext context) {
         super(Fletching.FLETCHING_SCREEN, syncId, playerInventory, context);
-//        this.world = playerInventory.player.getWorld();
-//        this.recipes = this.world.getRecipeManager().listAllOfType(RecipeType.SMITHING);
     }
 
     @Override

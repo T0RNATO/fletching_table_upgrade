@@ -1,4 +1,4 @@
-package tornato.fletching;
+package tornato.fletching.entity;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -22,6 +22,8 @@ import net.minecraft.world.World;
 import net.minecraft.world.explosion.Explosion;
 import net.minecraft.world.explosion.ExplosionBehavior;
 import org.jetbrains.annotations.Nullable;
+import tornato.fletching.item.ArrowComponent;
+import tornato.fletching.Fletching;
 
 public class FletchedArrowEntity extends PersistentProjectileEntity {
     private static final TrackedData<ItemStack> ITEM = DataTracker.registerData(FletchedArrowEntity.class, TrackedDataHandlerRegistry.ITEM_STACK);
@@ -127,10 +129,19 @@ public class FletchedArrowEntity extends PersistentProjectileEntity {
         super.onHit(target);
         var component = this.getComponent();
 
-        if (component.hasEffect()) {
-            var effects = this.getComponent().effect().get().getKeyOrValue().right().get().getEffects();
+        if (component.effect().isPresent()) {
+            var effects = component.effect().get().value().getEffects();
             for (var effect : effects) {
-                target.addStatusEffect(effect, this.getEffectCause());
+                target.addStatusEffect(
+                        new StatusEffectInstance(
+                                effect.getEffectType(),
+                                Math.max(effect.mapDuration(i -> i / 8), 1),
+                                effect.getAmplifier(),
+                                effect.isAmbient(),
+                                effect.shouldShowParticles()
+                        ),
+                        target
+                );
             }
         } else if (component.spectral()) {
             target.addStatusEffect(new StatusEffectInstance(StatusEffects.GLOWING, 200, 0), this.getEffectCause());
