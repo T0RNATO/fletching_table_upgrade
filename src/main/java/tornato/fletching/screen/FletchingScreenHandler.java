@@ -92,7 +92,7 @@ public class FletchingScreenHandler extends ForgingScreenHandler {
                 Optional.of(effect_slot.getItem().getRegistryEntry()):
                 Optional.empty();
 
-        var stack = new ItemStack(Fletching.ARROW_ITEM, YIELD.getOrDefault(point.getItem(), 6));
+        var stack = new ItemStack(Fletching.ARROW_ITEM, YIELD.getOrDefault(point.getItem(), 6) * (effect_slot.isOf(Items.SPLASH_POTION) ? 2 : 1));
         stack.set(Fletching.ARROW_COMPONENT, new ArrowComponent(fletching.getRegistryEntry(), shaft.getRegistryEntry(), point.getRegistryEntry(), effect, effect_item));
         this.output.setStack(0, stack);
     }

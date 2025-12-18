@@ -22,8 +22,11 @@ import net.minecraft.world.World;
 import net.minecraft.world.explosion.Explosion;
 import net.minecraft.world.explosion.ExplosionBehavior;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Vector3f;
 import tornato.fletching.item.ArrowComponent;
 import tornato.fletching.Fletching;
+
+import java.lang.Math;
 
 public class FletchedArrowEntity extends PersistentProjectileEntity {
     private static final TrackedData<ItemStack> ITEM = DataTracker.registerData(FletchedArrowEntity.class, TrackedDataHandlerRegistry.ITEM_STACK);
@@ -97,12 +100,11 @@ public class FletchedArrowEntity extends PersistentProjectileEntity {
         ) {
             Direction.Axis surfaceNormal = ((BlockHitResult) hitResult).getSide().getAxis();
             Vec3d velocity = this.getVelocity();
-            switch (surfaceNormal) {
-                case X -> velocity = velocity.rotateX(MathHelper.PI);
-                case Y -> velocity = velocity.rotateY(MathHelper.PI);
-                case Z -> velocity = velocity.rotateZ(MathHelper.PI);
-            }
-            this.setVelocity(velocity.multiply(this.getComponent().noGrav() ? -1 : -0.6));
+            this.setVelocity((switch (surfaceNormal) {
+                case X -> velocity.rotateX(MathHelper.PI);
+                case Y -> velocity.rotateY(MathHelper.PI);
+                case Z -> velocity.rotateZ(MathHelper.PI);
+            }).multiply(this.getComponent().noGrav() ? -1 : -0.6));
             bounceCount++;
         } else {
             super.onCollision(hitResult);
@@ -113,11 +115,28 @@ public class FletchedArrowEntity extends PersistentProjectileEntity {
         ) {
             var world = this.getWorld();
             if (!world.isClient()) {
-                if (this.getComponent().explodesOnHit()) {
+                if (this.getComponent().explodesOnHit())
                     world.createExplosion(this, world.getDamageSources().explosion(this, this.getEffectCause()), EXPLOSION_BEHAVIOR, hitResult.getPos(), 1, false, World.ExplosionSourceType.MOB);
-                }
-                if (this.getComponent().onFire()) {
+
+                if (this.getComponent().onFire())
                     world.createExplosion(this, world.getDamageSources().explosion(this, this.getEffectCause()), FIRE_BEHAVIOUR, hitResult.getPos(), 1.5f, true, World.ExplosionSourceType.MOB);
+
+                if (this.getComponent().shattersOnHit()) {
+                    var vel = this.getVelocity();
+                    var direction = hitResult instanceof BlockHitResult bhr ? bhr.getSide() : Direction.getFacing(vel);
+                    var addition = new Vector3f(direction.getOffsetX(), direction.getOffsetY(), direction.getOffsetZ()).mul(0.3f);
+                    for (int i = 0; i < 5; i++) {
+                        var facing = (switch (direction.getAxis()) {
+                            case X -> Direction.NORTH.getUnitVector().rotateX((float) (i * Math.PI / 2.5));
+                            case Y -> Direction.NORTH.getUnitVector().rotateY((float) (i * Math.PI / 2.5));
+                            case Z -> Direction.EAST .getUnitVector().rotateZ((float) (i * Math.PI / 2.5));
+                        }).add(addition).mul(0.2f);
+                        var entity = Fletching.AMETHYST_SHRAPNEL_ENTITY.create(world);
+                        entity.setVelocity(facing.x, facing.y, facing.z);
+                        entity.setPosition(this.getPos());
+                        entity.setOwner(this.getOwner());
+                        world.spawnEntity(entity);
+                    }
                 }
             }
             bounceCount++;

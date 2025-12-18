@@ -10,9 +10,6 @@
     "icon": "assets/fletching/icon.png",
     "environment": "*",
     "entrypoints": {
-        "fabric-datagen": [
-            "tornato.fletching.client.FletchingDataGenerator"
-        ],
         "client": [
             "tornato.fletching.client.FletchingClient"
         ],

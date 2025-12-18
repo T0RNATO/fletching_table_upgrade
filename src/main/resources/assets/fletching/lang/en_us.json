@@ -23,5 +23,6 @@
     "fletching.tooltip.item.minecraft.glowstone_dust": "  Applies glowing on hit",
     "fletching.tooltip.item.minecraft.slime_ball": "  Bounces off walls up to 4 times",
 
-    "item.fletching.arrow": "Arrow"
+    "item.fletching.arrow": "Arrow",
+    "entity.fletching.shrapnel": "Amethyst Shrapnel"
 }
