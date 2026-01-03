@@ -2,7 +2,7 @@
     "schemaVersion": 1,
     "id": "fletching",
     "version": "${version}",
-    "name": "fletching",
+    "name": "Fletching Overhaul",
     "description": "",
     "authors": [],
     "contact": {},
@@ -25,7 +25,7 @@
         }
     ],
     "depends": {
-        "fabricloader": ">=${loader_version}",
+        "fabricloader": "*",
         "fabric": "*",
         "minecraft": "${minecraft_version}"
     }
